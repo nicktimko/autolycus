@@ -3,11 +3,16 @@
 # Copyright (c) 2007, 2008 Rocco Rutte <pdmef@gmx.net> and others.
 # License: MIT <http://www.opensource.org/licenses/mit-license.php>
 
-from mercurial import hg,util,ui,templatefilters
-import re
-import os
 import sys
+import os
+import re
 import subprocess
+
+from mercurial import hg,util,ui,templatefilters
+
+__all__ = ['setup_repo', 'fixup_user', 'get_branch', 'get_changeset',
+           'load_cache', 'save_cache', 'get_git_sha1', 'set_default_branch',
+           'set_origin_name']
 
 # default git branch name
 cfg_master='master'

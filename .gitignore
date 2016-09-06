@@ -1,2 +1,6 @@
-*.pyc
+*.py[cod]
 .dotest
+
+build/
+dist/
+*.egg-info/

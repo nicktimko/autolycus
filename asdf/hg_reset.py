@@ -3,10 +3,13 @@
 # Copyright (c) 2007, 2008 Rocco Rutte <pdmef@gmx.net> and others.
 # License: GPLv2
 
-from mercurial import node
-from hg2git import setup_repo,load_cache,get_changeset,get_git_sha1
-from optparse import OptionParser
 import sys
+from optparse import OptionParser
+
+from mercurial import node
+
+from .hg2git import *
+
 
 def heads(ui,repo,start=None,stop=None,max=None):
   # this is copied from mercurial/revlog.py and differs only in
@@ -72,7 +75,7 @@ def get_tags(ui,repo,marks_cache,mapping_cache,max):
 def mangle_mark(mark):
   return str(int(mark)-1)
 
-if __name__=='__main__':
+def main():
   def bail(parser,opt):
     sys.stderr.write('Error: No option %s given\n' % opt)
     parser.print_help()
@@ -133,3 +136,6 @@ if __name__=='__main__':
   map(lambda b: sys.stdout.write('\t:%s %s\n\t\t(r%s: %s: %s)\n' % (b[0],b[1],b[2],b[4],b[3])),changed)
 
   print "Reset ':tip' in '%s' to '%d'" % (options.statusfile,options.revision)
+
+if __name__=='__main__':
+  main()

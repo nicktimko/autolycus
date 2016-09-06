@@ -3,13 +3,25 @@
 # Copyright (c) 2007, 2008 Rocco Rutte <pdmef@gmx.net> and others.
 # License: MIT <http://www.opensource.org/licenses/mit-license.php>
 
-from mercurial import node
-from hg2git import setup_repo,fixup_user,get_branch,get_changeset
-from hg2git import load_cache,save_cache,get_git_sha1,set_default_branch,set_origin_name
-from optparse import OptionParser
-import re
 import sys
 import os
+import re
+from optparse import OptionParser
+
+from mercurial import node
+
+from .hg2git import (
+    fixup_user,
+    get_branch,
+    get_changeset,
+    get_git_sha1,
+    load_cache,
+    save_cache,
+    set_default_branch,
+    set_origin_name,
+    setup_repo,
+)
+
 
 if sys.platform == "win32":
   # On Windows, sys.stdout is initially opened in text mode, which means that
@@ -417,7 +429,7 @@ def hg2git(repourl,m,marksfile,mappingfile,headsfile,tipfile,
 
   return 0
 
-if __name__=='__main__':
+def main():
   def bail(parser,opt):
     sys.stderr.write('Error: No %s option given\n' % opt)
     parser.print_help()
@@ -502,3 +514,6 @@ if __name__=='__main__':
                   authors=a,branchesmap=b,tagsmap=t,
                   sob=options.sob,force=options.force,hgtags=options.hgtags,
                   notes=options.notes,encoding=encoding,fn_encoding=fn_encoding))
+
+if __name__=='__main__':
+  main()
