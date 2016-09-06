@@ -6,7 +6,7 @@ def read(fname):
 
 setup(
     name='asdf',
-    version='0.0.1',
+    version='0.0.3',
     author='Hermes',
     author_email='hermes@olympus.gr',
 
@@ -17,8 +17,8 @@ setup(
     packages=['asdf'],
     entry_points={
         'console_scripts': [
-            'hg-fast-export=asdf.hg_fast_export.main',
-            'hg-reset=asdf.hg_reset.main',
+            'hg-fast-export=asdf.hg_fast_export:main',
+            'hg-reset=asdf.hg_reset:main',
         ],
     },
 
@@ -30,6 +30,7 @@ setup(
     keywords='mercurial git vcs dvcs',
     classifiers=[
         'Development Status :: 3 - Alpha',
+        'Programming Language :: Python :: 2 :: Only',
         'Topic :: Utilities',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
     ],
