@@ -29,7 +29,7 @@ if sys.platform == "win32":
   # into CRLF (\r\n).  That makes git blow up, so use this platform-specific
   # code to change the mode of sys.stdout to binary.
   import msvcrt
-  msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
+  # msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
 
 # silly regex to catch Signed-off-by lines in log message
 sob_re=re.compile('^Signed-[Oo]ff-[Bb]y: (.+)$')
