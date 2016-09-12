@@ -429,6 +429,176 @@ def hg2git(repourl,m,marksfile,mappingfile,headsfile,tipfile,
 
   return 0
 
+def sh_main():
+    """Ported code from hg-fast-export.sh that uses this modules main func"""
+    # ROOT="$(dirname "$(which "$0")")"
+    # REPO=""
+    GIT_DIR = subprocess.check_output('git rev-parse --git-dir'.split())
+    GIT_DIR = os.path.abspath(GIT_DIR.rstrip())
+
+    PFX = "hg2git"
+    SFX_MAPPING = "mapping"
+    SFX_MARKS = "marks"
+    SFX_HEADS = "heads"
+    SFX_STATE = "state"
+    metadata_files = {
+        'mapping': '{}-{}'.format(PFX, SFX_MAPPING),
+        'marks': '{}-{}'.format(PFX, SFX_MARKS),
+        'heads': '{}-{}'.format(PFX, SFX_HEADS),
+        'state': '{}-{}'.format(PFX, SFX_STATE),
+    }
+    # GFI_OPTS=""
+    # PYTHON=${PYTHON:-python}
+    #
+    # USAGE="[--quiet] [-r <repo>] [--force] [-m <max>] [-s] [--hgtags] [-A <file>] [-B <file>] [-T <file>] [-M <name>] [-o <name>] [--hg-hash] [-e <encoding>]"
+    # LONG_USAGE="Import hg repository <repo> up to either tip or <max>
+    # If <repo> is omitted, use last hg repository as obtained from state file,
+    # GIT_DIR/$PFX-$SFX_STATE by default.
+    parser = argparse.ArgumentParser(description='Import Hg repo up to tip')
+    # Note: The argument order matters.
+    #
+    # Options:
+    # 	--quiet   Passed to git-fast-import(1)
+    # 	-r <repo> Mercurial repository to import
+    # 	--force   Ignore validation errors when converting, and pass --force
+    # 	          to git-fast-import(1)
+    # 	-m <max>  Maximum revision to import
+    # 	-s        Enable parsing Signed-off-by lines
+    # 	--hgtags  Enable exporting .hgtags files
+    # 	-A <file> Read author map from file
+    # 	          (Same as in git-svnimport(1) and git-cvsimport(1))
+    # 	-B <file> Read branch map from file
+    # 	-T <file> Read tags map from file
+    # 	-M <name> Set the default branch name (defaults to 'master')
+    # 	-o <name> Use <name> as branch namespace to track upstream (eg 'origin')
+    # 	--hg-hash Annotate commits with the hg hash as git notes in the
+    #                   hg namespace.
+    # 	-e <encoding> Assume commit and author strings retrieved from
+    # 	              Mercurial are encoded in <encoding>
+    # 	--fe <filename_encoding> Assume filenames from Mercurial are encoded
+    # 	                         in <filename_encoding>
+    # "
+    # case "$1" in
+    #     -h|--help)
+    #       echo "usage: $(basename "$0") $USAGE"
+    #       echo ""
+    #       echo "$LONG_USAGE"
+    #       exit 0
+    # esac
+    # . "$(git --exec-path)/git-sh-setup"
+    # cd_to_toplevel
+    'go to top-level of the git repo'
+
+    # while case "$#" in 0) break ;; esac
+    # do
+    #   case "$1" in
+    parser.add_argument('-r', '-repo', help="Mercurial repository to convert", type=str)
+    #     -r|--r|--re|--rep|--repo)
+    #       shift
+    #       REPO="$1"
+    #       ;;
+    parser.add_argument('-q', '--quiet', help="Quiet git-fast-import", action='store_true')
+    #     --q|--qu|--qui|--quie|--quiet)
+    #       GFI_OPTS="$GFI_OPTS --quiet"
+    #       ;;
+    parser.add_argument('-f', '--force', help="Ignore validation errors when converting", action='store_true')
+    #     --force)
+    #       # pass --force to git-fast-import and hg-fast-export.py
+    #       GFI_OPTS="$GFI_OPTS --force"
+    #       break
+    #       ;;
+    #     -*)
+    #       # pass any other options down to hg2git.py
+    #       break
+    #       ;;
+    #     *)
+    #       break
+    #       ;;
+    #   esac
+    #   shift
+    # done
+
+    def parse_metadata_file(fn):
+        data = {}
+        with open(fn, 'r') as f:
+            for line in f:
+                key, value = line.split(' ', 1)
+                assert key[0] == ':'
+                data[key[1:]] = value.rstrip()
+        return data
+
+    state = parse_metadata_file(os.path.join(GIT_DIR, metadata_files['state']))
+    try:
+        hg_repo = state['repo']
+    except KeyError:
+        raise Exception('Hg repo unknown. You must specify it with -r')
+    # # for convenience: get default repo from state file
+    # if [ x"$REPO" = x -a -f "$GIT_DIR/$PFX-$SFX_STATE" ] ; then
+    #   REPO="`grep '^:repo ' "$GIT_DIR/$PFX-$SFX_STATE" | cut -d ' ' -f 2`"
+    #   echo "Using last hg repository \"$REPO\""
+    # fi
+    #
+    # if [  -z "$REPO" ]; then
+    #     echo "no repo given, use -r flag"
+    #     exit 1
+    # fi
+    #
+    # # make sure we have a marks cache
+    # if [ ! -f "$GIT_DIR/$PFX-$SFX_MARKS" ] ; then
+    #   touch "$GIT_DIR/$PFX-$SFX_MARKS"
+    # fi
+    #
+    # # cleanup on exit
+    # trap 'rm -f "$GIT_DIR/$PFX-$SFX_MARKS.old" "$GIT_DIR/$PFX-$SFX_MARKS.tmp"' 0
+    #
+    # _err1=
+    # _err2=
+    # exec 3>&1
+    # { read -r _err1 || :; read -r _err2 || :; } <<-EOT
+    # $(
+    #   exec 4>&3 3>&1 1>&4 4>&-
+    #   {
+    #     _e1=0
+    #     GIT_DIR="$GIT_DIR" $PYTHON "$ROOT/hg-fast-export.py" \
+    #       --repo "$REPO" \
+    #       --marks "$GIT_DIR/$PFX-$SFX_MARKS" \
+    #       --mapping "$GIT_DIR/$PFX-$SFX_MAPPING" \
+    #       --heads "$GIT_DIR/$PFX-$SFX_HEADS" \
+    #       --status "$GIT_DIR/$PFX-$SFX_STATE" \
+    #       "$@" 3>&- || _e1=$?
+    #     echo $_e1 >&3
+    #   } | \
+    #   {
+    #     _e2=0
+    #     git fast-import $GFI_OPTS --export-marks="$GIT_DIR/$PFX-$SFX_MARKS.tmp" 3>&- || _e2=$?
+    #     echo $_e2 >&3
+    #   }
+    # )
+    # EOT
+    # exec 3>&-
+    # [ "$_err1" = 0 -a "$_err2" = 0 ] || exit 1
+    #
+    # # move recent marks cache out of the way...
+    # if [ -f "$GIT_DIR/$PFX-$SFX_MARKS" ] ; then
+    #   mv "$GIT_DIR/$PFX-$SFX_MARKS" "$GIT_DIR/$PFX-$SFX_MARKS.old"
+    # else
+    #   touch "$GIT_DIR/$PFX-$SFX_MARKS.old"
+    # fi
+    #
+    # # ...to create a new merged one
+    # cat "$GIT_DIR/$PFX-$SFX_MARKS.old" "$GIT_DIR/$PFX-$SFX_MARKS.tmp" \
+    # | uniq > "$GIT_DIR/$PFX-$SFX_MARKS"
+    #
+    # # save SHA1s of current heads for incremental imports
+    # # and connectivity (plus sanity checking)
+    # for head in `git branch | sed 's#^..##'` ; do
+    #   id="`git rev-parse refs/heads/$head`"
+    #   echo ":$head $id"
+    # done > "$GIT_DIR/$PFX-$SFX_HEADS"
+    #
+    # # check diff with color:
+    # # ( for i in `find . -type f | grep -v '\.git'` ; do diff -u $i $REPO/$i ; done | cdiff ) | less -r
+
 def main():
   def bail(parser,opt):
     sys.stderr.write('Error: No %s option given\n' % opt)
