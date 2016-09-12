@@ -17,7 +17,7 @@ Please note that `hg-fast-export` does not automatically check out the newly imp
 
 Incremental imports to track hg repos is supported, too.
 
-Using `hg-reset` it is quite simple within a Git repository that is `hg-fast-export`'ed from mercurial:
+Using `hg-reset` it is quite simple within a Git repository that is `hg-fast-export`'ed from Mercurial:
 
 ```
 hg-reset.sh -R <revision>
@@ -29,7 +29,7 @@ When a Mercurial repository does not use UTF-8 for encoding author strings and c
 
 In some locales Mercurial uses different encodings for commit messages and file names. In that case, you can use `--fe <encoding>` command line option which overrides the `-e` option for file names.
 
-As mercurial appears to be much less picky about the syntax of the author information than Git, an author mapping file can be given to hg-fast-export to fix up malformed author strings. The file is specified using the `-A` option. The file should contain lines of the form `FromAuthor=ToAuthor`. The example `authors.map` below will translate `User <garbage<user@example.com>` to `User <user@example.com>`.
+As Mercurial appears to be much less picky about the syntax of the author information than Git, an author mapping file can be given to hg-fast-export to fix up malformed author strings. The file is specified using the `-A` option. The file should contain lines of the form `FromAuthor=ToAuthor`. The example `authors.map` below will translate `User <garbage<user@example.com>` to `User <user@example.com>`.
 
 ```
 -- Start of authors.map --
@@ -50,6 +50,8 @@ Notes/Limitations
 As each `git-fast-import` run creates a new pack file, it may be required to repack the repository quite often for incremental imports (especially when importing a small number of changesets per incremental import).
 
 The way the Hg API and remote access protocol is designed it is not possible to use `hg-fast-export` on remote repositories (HTTP/SSH). First clone the repository, then convert it.
+
+Mercurial [doesn't support Python 3](https://www.mercurial-scm.org/wiki/SupportedPythonVersions#Python_3.x_support) and probably won't for a while.
 
 Design
 ------

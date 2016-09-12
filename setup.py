@@ -5,20 +5,20 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-    name='asdf',
-    version='0.0.3',
-    author='Hermes',
+    name='autolycus',
+    version='0.0.4',
+    author='Hermes & Chione',
     author_email='hermes@olympus.gr',
 
     description='Exports a Mercurial repo to Git',
     long_description=read('README.md'),
     license='GPLv2',
 
-    packages=['asdf'],
+    packages=['autolycus'],
     entry_points={
         'console_scripts': [
-            'hg-fast-export=asdf.hg_fast_export:main',
-            'hg-reset=asdf.hg_reset:main',
+            'shelley=autolycus.hg_fast_export:main',
+            # 'hg-reset=autolycus.hg_reset:main',
         ],
     },
 
@@ -26,11 +26,12 @@ setup(
         'mercurial',
     ],
 
-    url='http://github.com/nicktimko/fast-export',
+    url='http://github.com/nicktimko/autolycus',
     keywords='mercurial git vcs dvcs',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Programming Language :: Python :: 2 :: Only',
+        'Programming Language :: Python :: 2.7',
         'Topic :: Utilities',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
     ],
