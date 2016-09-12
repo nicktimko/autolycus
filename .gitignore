@@ -4,3 +4,9 @@
 build/
 dist/
 *.egg-info/
+venv/
+.python-version
+
+temp/
+tmp/
+*.tmp
