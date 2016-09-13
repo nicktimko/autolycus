@@ -17,7 +17,8 @@ setup(
     packages=['autolycus'],
     entry_points={
         'console_scripts': [
-            'shelley=autolycus.hg_fast_export:main',
+            'shelley=autolycus.fe:main',
+            'shelley_legacy=autolycus.legacy:main'
             # 'hg-reset=autolycus.hg_reset:main',
         ],
     },

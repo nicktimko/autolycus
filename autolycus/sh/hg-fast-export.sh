@@ -36,9 +36,9 @@ Options:
 	-o <name> Use <name> as branch namespace to track upstream (eg 'origin')
 	--hg-hash Annotate commits with the hg hash as git notes in the
                   hg namespace.
-	-e <encoding> Assume commit and author strings retrieved from 
+	-e <encoding> Assume commit and author strings retrieved from
 	              Mercurial are encoded in <encoding>
-	--fe <filename_encoding> Assume filenames from Mercurial are encoded 
+	--fe <filename_encoding> Assume filenames from Mercurial are encoded
 	                         in <filename_encoding>
 "
 case "$1" in
@@ -96,6 +96,10 @@ fi
 # cleanup on exit
 trap 'rm -f "$GIT_DIR/$PFX-$SFX_MARKS.old" "$GIT_DIR/$PFX-$SFX_MARKS.tmp"' 0
 
+# GIT_DIR="$GIT_DIR" $PYTHON "$ROOT/hg-fast-export.py"
+# to
+# GIT_DIR="$GIT_DIR" $PYTHON -m autolycus.fe
+
 _err1=
 _err2=
 exec 3>&1
@@ -104,7 +108,7 @@ $(
   exec 4>&3 3>&1 1>&4 4>&-
   {
     _e1=0
-    GIT_DIR="$GIT_DIR" $PYTHON "$ROOT/hg-fast-export.py" \
+    GIT_DIR="$GIT_DIR" $PYTHON -m autolycus.fe \
       --repo "$REPO" \
       --marks "$GIT_DIR/$PFX-$SFX_MARKS" \
       --mapping "$GIT_DIR/$PFX-$SFX_MAPPING" \

@@ -2,6 +2,7 @@
 
 # Copyright (c) 2007, 2008 Rocco Rutte <pdmef@gmx.net> and others.
 # License: MIT <http://www.opensource.org/licenses/mit-license.php>
+from __future__ import absolute_import, print_function
 
 import sys
 import os
@@ -20,6 +21,7 @@ from .hg2git import (
     set_default_branch,
     set_origin_name,
     setup_repo,
+    CacheFile,
 )
 
 
@@ -29,7 +31,7 @@ if sys.platform == "win32":
   # into CRLF (\r\n).  That makes git blow up, so use this platform-specific
   # code to change the mode of sys.stdout to binary.
   import msvcrt
-  msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
+  # msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
 
 # silly regex to catch Signed-off-by lines in log message
 sob_re=re.compile('^Signed-[Oo]ff-[Bb]y: (.+)$')
@@ -376,12 +378,17 @@ def hg2git(repourl,m,marksfile,mappingfile,headsfile,tipfile,
     if len(contents) == 0:
       sys.stderr.write('Warning: %s does not contain any data, this will probably make an incremental import fail\n' % filename)
 
-  _max=int(m)
+  # _max=int(m)
 
   old_marks=load_cache(marksfile,lambda s: int(s)-1)
   mapping_cache=load_cache(mappingfile)
   heads_cache=load_cache(headsfile)
   state_cache=load_cache(tipfile)
+
+  # old_marks = CacheFile(marksfile, lambda s: int(s) - 1)
+  # mapping_cache = CacheFile(mappingfile)
+  # heads_cache = CacheFile(headsfile)
+  # state_cache = CacheFile(tipfile)
 
   if len(state_cache) != 0:
     for (name, data) in [(marksfile, old_marks),
@@ -389,43 +396,50 @@ def hg2git(repourl,m,marksfile,mappingfile,headsfile,tipfile,
                          (headsfile, state_cache)]:
       check_cache(name, data)
 
-  ui,repo=setup_repo(repourl)
+  # if state_cache.empty():
+  #     for cache in [old_marks, mapping_cache, heads_cache]:
+  #         cache.check()
+
+  ui, repo = setup_repo(repourl)
 
   if not verify_heads(ui,repo,heads_cache,force,branchesmap):
     return 1
 
   try:
-    tip=repo.changelog.count()
+    tip = repo.changelog.count()
   except AttributeError:
-    tip=len(repo)
+    tip = len(repo)
 
-  min=int(state_cache.get('tip',0))
-  max=_max
-  if _max<0 or max>tip:
-    max=tip
+  #_max=int(m)
 
-  for rev in range(0,max):
+  min_ = int(state_cache.get('tip', 0))
+  max_ = int(m)
+  if max_ < 0 or max_ > tip:
+    max_ = tip
+
+  for rev in range(0, max_):
   	(revnode,_,_,_,_,_,_,_)=get_changeset(ui,repo,rev,authors)
   	mapping_cache[revnode.encode('hex_codec')] = str(rev)
 
-
-  c=0
-  brmap={}
-  for rev in range(min,max):
-    c=export_commit(ui,repo,rev,old_marks,max,c,authors,branchesmap,
+  c = 0
+  brmap = {}
+  for rev in range(min_, max_):
+    c = export_commit(ui,repo,rev,old_marks,max_,c,authors,branchesmap,
                     sob,brmap,hgtags,encoding,fn_encoding)
   if notes:
-    for rev in range(min,max):
-      c=export_note(ui,repo,rev,c,authors, encoding, rev == min and min != 0)
+    for rev in range(min_, max_):
+      c = export_note(ui, repo, rev, c, authors, encoding, rev == min_ and min_ != 0)
 
-  state_cache['tip']=max
-  state_cache['repo']=repourl
-  save_cache(tipfile,state_cache)
-  save_cache(mappingfile,mapping_cache)
+  state_cache['tip'] = max_
+  state_cache['repo'] = repourl
+  # state_cache.save()
+  # mapping_cache.save()
+  save_cache(tipfile, state_cache)
+  save_cache(mappingfile, mapping_cache)
 
-  c=export_tags(ui,repo,old_marks,mapping_cache,c,authors,tagsmap)
+  c = export_tags(ui,repo,old_marks,mapping_cache,c,authors,tagsmap)
 
-  sys.stderr.write('Issued %d commands\n' % c)
+  print('Issued {} commands'.format(c), file=sys.stderr)
 
   return 0
 
