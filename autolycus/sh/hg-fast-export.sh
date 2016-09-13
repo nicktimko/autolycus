@@ -98,7 +98,7 @@ trap 'rm -f "$GIT_DIR/$PFX-$SFX_MARKS.old" "$GIT_DIR/$PFX-$SFX_MARKS.tmp"' 0
 
 # GIT_DIR="$GIT_DIR" $PYTHON "$ROOT/hg-fast-export.py"
 # to
-# GIT_DIR="$GIT_DIR" $PYTHON -m autolycus.fe
+# GIT_DIR="$GIT_DIR" $PYTHON -m autolycus.hg_fast_export
 
 _err1=
 _err2=
@@ -108,7 +108,7 @@ $(
   exec 4>&3 3>&1 1>&4 4>&-
   {
     _e1=0
-    GIT_DIR="$GIT_DIR" $PYTHON -m autolycus.fe \
+    GIT_DIR="$GIT_DIR" $PYTHON -m autolycus.hg_fast_export \
       --repo "$REPO" \
       --marks "$GIT_DIR/$PFX-$SFX_MARKS" \
       --mapping "$GIT_DIR/$PFX-$SFX_MAPPING" \
