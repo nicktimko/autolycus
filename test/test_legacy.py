@@ -4,11 +4,11 @@
 from __future__ import print_function, unicode_literals
 
 import sys
+import os
 import subprocess
 import functools
 
-
-ccall = functools.partial(subprocess.check_call, shell=True)
+from support import ccall, TemporaryDirectory
 
 
 def make_hg():
@@ -19,8 +19,12 @@ def make_hg():
     ccall('hg add a', cwd='mercury')
     ccall('hg commit -m "A"', cwd='mercury')
 
-def test_content_preservation():
-    make_hg()
 
-    ccall('git init venus')
-    ccall('shelley -r ../mercury', cwd='venus')
+def test_content_preservation():
+    with TemporaryDirectory() as td:
+        os.chdir(td)
+
+        make_hg()
+
+        ccall('git init venus')
+        ccall('shelley_legacy -r ../mercury', cwd='venus')
