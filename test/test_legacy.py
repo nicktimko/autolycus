@@ -10,6 +10,14 @@ import functools
 
 from support import ccall, TemporaryDirectory
 
+def hg_config():
+    with open(os.path.expanduser('~/.hgrc'), 'w') as f:
+        f.write('''\
+[ui]
+username = Alice Applebaum <aappl@mercury.example>
+''')
+hg_config()
+
 
 def make_hg():
     ccall('hg init mercury')
