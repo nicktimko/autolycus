@@ -11,7 +11,7 @@ setup(
     author_email='hermes@olympus.gr',
 
     description='Exports a Mercurial repo to Git',
-    long_description=read('README.md'),
+    long_description=read('README.rst'),
     license='GPLv2',
 
     packages=['autolycus'],
