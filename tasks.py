@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-import os.path
+import os
 import errno
 import shutil
 
@@ -26,6 +26,16 @@ def clean(ctx):
 @task
 def build(ctx):
     ctx.run('python setup.py sdist bdist_wheel')
+
+
+@task
+def install(ctx):
+    if int(os.environ.get('INSTALL_WHEEL', 0)):
+        print('installing bdist_wheel...')
+        ctx.run('pip install dist/autolycus-*.whl')
+    else:
+        print('installing sdist...')
+        ctx.run('pip install dist/autolycus-*.tar.gz')
 
 
 @task
