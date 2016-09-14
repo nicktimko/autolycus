@@ -1,0 +1,6 @@
+mercurial
+twine
+invoke
+nose
+wheel
+setuptools

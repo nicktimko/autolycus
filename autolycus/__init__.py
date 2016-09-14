@@ -5,3 +5,5 @@ from . import hg2git
 from . import hg_fast_export as fe
 from . import hg_reset as r
 from . import legacy
+
+__version__ = '0.0.5'

@@ -1,14 +1,16 @@
 import os
 from setuptools import setup
 
+import autolycus
+
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
     name='autolycus',
-    version='0.0.4',
-    author='Hermes & Chione',
-    author_email='hermes@olympus.gr',
+    version=autolycus.__version__,
+    author='Nick Timkovich',
+    author_email='prometheus235@gmail.com',
 
     description='Exports a Mercurial repo to Git',
     long_description=read('README.rst'),
