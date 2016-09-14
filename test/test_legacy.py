@@ -12,15 +12,26 @@ from nose.tools import assert_equals
 
 from support import ccall, callo, TemporaryDirectory
 
-def hg_config():
+def coro(func):
+    def _coro(*args, **kwargs):
+        g = func(*args, **kwargs)
+        g.send(None)
+        return g
+    return _coro
+
+def hg_config(username=None):
+    if username is None:
+        username = 'Alice Applebaum <aappl@mercury.example>'
+
     with open(os.path.expanduser('~/.hgrc'), 'w') as f:
-        f.write('''\
-[ui]
-username = Alice Applebaum <aappl@mercury.example>
-''')
-hg_config()
+        f.write('\n'.join([
+            '[ui]',
+            'username = {}'.format(username),
+            '',
+        ]))
 
 
+@coro
 def make_hg():
     ccall('hg init mercury')
     with open('mercury/a', 'wb') as f:
@@ -47,15 +58,19 @@ def make_hg():
 def test_suite():
     with TemporaryDirectory() as td:
         os.chdir(td)
-        source_repo = make_hg()\
+        hg_config()
 
-        # the repo hatches!
-        source_repo.send(None)
+        # the repo is born!
+        source_repo = make_hg()
 
         ccall('git init venus --quiet')
 
         ccall('shelley_legacy -r ../mercury', cwd='venus')
         assert_equals(callo('git show HEAD:a', cwd='venus'), 'apple\n'.encode('utf-8'))
+
+        author, email = callo('git log -1 --pretty="%an|||%ae"', cwd='venus').split('|||')
+        assert_equals(author.strip(), 'Alice Applebaum')
+        assert_equals(email.strip(), 'aappl@mercury.example')
 
         # repo is evolving!
         source_repo.send(None)
@@ -70,3 +85,43 @@ def test_suite():
             callo('git log -1 --pretty=%B', cwd='venus').rstrip('\n'),
             '3. different'.encode('utf-8')
         )
+
+
+def test_bad_hg_name():
+    with TemporaryDirectory() as td:
+        os.chdir(td)
+        hg_config('Malcom Prenom (creative@syntax.example)')
+
+        source_repo = make_hg()
+
+        ccall('git init venus --quiet')
+
+        ccall('shelley_legacy -r ../mercury', cwd='venus')
+
+        author, email = callo('git log -1 --pretty="%an|||%ae"', cwd='venus').split('|||')
+        try:
+            assert_equals(author.strip(), 'Malcom Prenom')
+            assert_equals(email.strip(), 'creative@syntax.example')
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError('git magically parsed malformed name??')
+
+
+def test_bad_name_mapping_fix():
+    with TemporaryDirectory() as td:
+        os.chdir(td)
+        hg_config('Malcom Prenom (creative@syntax.example)')
+
+        source_repo = make_hg()
+
+        ccall('git init venus --quiet')
+
+        with open('author_map.txt', 'w') as f:
+            f.write('Malcom Prenom (creative@syntax.example)=Malcom Prenom <creative@syntax.example>\n')
+
+        ccall('shelley_legacy -r ../mercury -A ../author_map.txt', cwd='venus')
+
+        author, email = callo('git log -1 --pretty="%an|||%ae"', cwd='venus').split('|||')
+        assert_equals(author.strip(), 'Malcom Prenom')
+        assert_equals(email.strip(), 'creative@syntax.example')

@@ -22,12 +22,14 @@ def main():
         'GIT_DIR/hg2git-state by default.')
 
     parser.add_argument('-r', '--repo', type=str, help='Mercurial repository to import')
+    parser.add_argument('-A', '--authors-map', type=str, help='Author mapping file')
 
     args = parser.parse_args()
 
-    subprocess.check_call(shlex.split('/bin/sh {script} {repo}'.format(
+    subprocess.check_call(shlex.split('/bin/sh {script} {repo} {authors}'.format(
         script=HFE_SH,
         repo='-r {}'.format(args.repo) if args.repo else '',
+        authors='-A {}'.format(args.authors_map) if args.authors_map else '',
     )), cwd=os.getcwd())
 
 
