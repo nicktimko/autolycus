@@ -12,7 +12,7 @@ setup(
     author='Nick Timkovich',
     author_email='prometheus235@gmail.com',
 
-    description='Exports a Mercurial repo to Git',
+    description='Exports/synchronizes a Mercurial repo to Git',
     long_description=read('README.rst'),
     license='GPLv2',
 
@@ -20,7 +20,7 @@ setup(
     include_package_data=True,
     entry_points={
         'console_scripts': [
-            'shelley=autolycus.fe:main',
+            'shelley=autolycus.sync:main',
             'shelley_legacy=autolycus.legacy:main'
             # 'hg-reset=autolycus.hg_reset:main',
         ],

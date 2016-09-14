@@ -10,9 +10,9 @@ ROOT = os.path.abspath(os.path.dirname(__file__))
 
 @task
 def clean(ctx):
-    targets = ['build', 'dist', 'autolycus.egg-info']
+    rm_targets = ['build', 'dist', 'autolycus.egg-info']
 
-    for t in targets:
+    for t in rm_targets:
         try:
             print('removing {}...'.format(t), end=' ')
             shutil.rmtree(os.path.join(ROOT, t))
