@@ -10,6 +10,8 @@ venv/
 temp/
 tmp/
 *.tmp
+*tmp*
+*temp*
 
 .ipynb_checkpoints/
 Untitled*.ipynb

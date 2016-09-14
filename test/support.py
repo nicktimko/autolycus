@@ -96,3 +96,4 @@ class TemporaryDirectory(object):
 
 
 ccall = functools.partial(subprocess.check_call, shell=True)
+callo = functools.partial(subprocess.check_output, shell=True)
