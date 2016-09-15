@@ -7,10 +7,13 @@ import sys
 import os
 import subprocess
 import functools
+import shlex
 
 from nose.tools import assert_equals
 
-from support import ccall, callo, TemporaryDirectory
+from support import ccall, callo, cd_context, TemporaryDirectory
+
+import autolycus.hg_fast_export as hfe
 
 def coro(func):
     def _coro(*args, **kwargs):
@@ -55,6 +58,25 @@ def make_hg():
     yield {'a': 'apricot\n', 'b': 'chom-chom\n'}
 
 
+def coverage_call(hg_repo_path, git_repo_path, more_args=''):
+    """
+    This calls the hg_fast_export Python code to test coverage. It doesn't
+    actually modify the Git repo itself (must be piped into git-fast-import),
+    but it does modify some files...
+    """
+    hg_repo_path = os.path.abspath(hg_repo_path)
+    git_repo_path = os.path.abspath(git_repo_path)
+
+    with cd_context(git_repo_path):
+        hfe.main(shlex.split(' '.join([
+            '--repo "{}"'.format(hg_repo_path),
+            '--marks "../cov-marks"',
+            '--mapping "../cov-mapping"',
+            '--heads "../cov-heads"',
+            '--status "../cov-state"',
+            '""']) + more_args))
+
+
 def test_suite():
     with TemporaryDirectory() as td:
         os.chdir(td)
@@ -65,7 +87,9 @@ def test_suite():
 
         ccall('git init venus --quiet')
 
+        coverage_call(hg_repo_path='mercury', git_repo_path='venus')
         ccall('shelley_legacy -r ../mercury', cwd='venus')
+
         assert_equals(callo('git show HEAD:a', cwd='venus'), 'apple\n'.encode('utf-8'))
 
         author, email = callo('git log -1 --pretty="%an|||%ae"', cwd='venus').split('|||')
@@ -75,7 +99,9 @@ def test_suite():
         # repo is evolving!
         source_repo.send(None)
 
+        coverage_call(hg_repo_path='mercury', git_repo_path='venus')
         ccall('shelley_legacy', cwd='venus')
+
         # should update without -r using the repo it's recorded in its metadata
         assert_equals(
             callo('git show HEAD:a', cwd='venus'),
@@ -96,6 +122,7 @@ def test_bad_hg_name():
 
         ccall('git init venus --quiet')
 
+        coverage_call(hg_repo_path='mercury', git_repo_path='venus')
         ccall('shelley_legacy -r ../mercury', cwd='venus')
 
         author, email = callo('git log -1 --pretty="%an|||%ae"', cwd='venus').split('|||')
@@ -120,6 +147,7 @@ def test_bad_name_mapping_fix():
         with open('author_map.txt', 'w') as f:
             f.write('Malcom Prenom (creative@syntax.example)=Malcom Prenom <creative@syntax.example>\n')
 
+        coverage_call(hg_repo_path='mercury', git_repo_path='venus', more_args='-A ../author_map.txt')
         ccall('shelley_legacy -r ../mercury -A ../author_map.txt', cwd='venus')
 
         author, email = callo('git log -1 --pretty="%an|||%ae"', cwd='venus').split('|||')

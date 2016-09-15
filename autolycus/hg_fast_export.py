@@ -443,7 +443,7 @@ def hg2git(repourl,m,marksfile,mappingfile,headsfile,tipfile,
 
   return 0
 
-def sh_main():
+def sh_main(): # pragma: no cover
     """Ported code from hg-fast-export.sh that uses this modules main func"""
     # ROOT="$(dirname "$(which "$0")")"
     # REPO=""
@@ -613,7 +613,7 @@ def sh_main():
     # # check diff with color:
     # # ( for i in `find . -type f | grep -v '\.git'` ; do diff -u $i $REPO/$i ; done | cdiff ) | less -r
 
-def main():
+def main(argv):
   def bail(parser,opt):
     sys.stderr.write('Error: No %s option given\n' % opt)
     parser.print_help()
@@ -656,7 +656,7 @@ def main():
   parser.add_option("--fe",dest="fn_encoding",
       help="Assume file names from Mercurial are encoded in <filename_encoding>")
 
-  (options,args)=parser.parse_args()
+  (options,args)=parser.parse_args(argv)
 
   m=-1
   if options.max!=None: m=options.max
@@ -693,11 +693,11 @@ def main():
   if options.fn_encoding!=None:
     fn_encoding=options.fn_encoding
 
-  sys.exit(hg2git(options.repourl,m,options.marksfile,options.mappingfile,
+  return hg2git(options.repourl,m,options.marksfile,options.mappingfile,
                   options.headsfile, options.statusfile,
                   authors=a,branchesmap=b,tagsmap=t,
                   sob=options.sob,force=options.force,hgtags=options.hgtags,
-                  notes=options.notes,encoding=encoding,fn_encoding=fn_encoding))
+                  notes=options.notes,encoding=encoding,fn_encoding=fn_encoding)
 
 if __name__=='__main__':
-  main()
+  sys.exit(main(sys.argv[1:]))

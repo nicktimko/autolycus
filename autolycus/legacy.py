@@ -23,13 +23,15 @@ def main():
 
     parser.add_argument('-r', '--repo', type=str, help='Mercurial repository to import')
     parser.add_argument('-A', '--authors-map', type=str, help='Author mapping file')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Verbose output from git-fast-import')
 
     args = parser.parse_args()
 
-    subprocess.check_call(shlex.split('/bin/sh {script} {repo} {authors}'.format(
+    subprocess.check_call(shlex.split('/bin/sh {script} {quiet} {repo} {authors}'.format(
         script=HFE_SH,
         repo='-r {}'.format(args.repo) if args.repo else '',
         authors='-A {}'.format(args.authors_map) if args.authors_map else '',
+        quiet='' if args.verbose else '--quiet',
     )), cwd=os.getcwd())
 
 

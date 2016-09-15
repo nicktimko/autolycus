@@ -1,6 +1,7 @@
-mercurial
-twine
+coverage
 invoke
+mercurial
 nose
-wheel
 setuptools
+twine
+wheel

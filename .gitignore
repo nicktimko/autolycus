@@ -1,5 +1,7 @@
 *.py[cod]
 .dotest
+.coverage
+coverage_*report/
 
 build/
 dist/

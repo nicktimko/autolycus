@@ -5,6 +5,7 @@ import warnings
 import tempfile
 import subprocess
 import functools
+import contextlib
 
 
 __all__ = ['TemporaryDirectory', 'ccall']
@@ -93,6 +94,14 @@ class TemporaryDirectory(object):
             self._rmdir(path)
         except OSError:
             pass
+
+
+@contextlib.contextmanager
+def cd_context(path):
+    prev_cwd = os.getcwd()
+    os.chdir(path)
+    yield
+    os.chdir(prev_cwd)
 
 
 ccall = functools.partial(subprocess.check_call, shell=True)

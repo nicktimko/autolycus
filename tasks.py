@@ -3,10 +3,18 @@ from __future__ import print_function
 import os
 import errno
 import shutil
+import webbrowser
+import urlparse
+import urllib
 
 from invoke import task
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
+
+def fileurl(path):
+    path = os.path.abspath(path)
+    return urlparse.urljoin('file:', urllib.pathname2url(path))
+
 
 @task
 def clean(ctx):
@@ -38,9 +46,38 @@ def install(ctx):
         ctx.run('pip install dist/autolycus-*.tar.gz')
 
 
+# def covpth():
+#     from distutils.sysconfig import get_python_lib
+#     return os.path.join(get_python_lib(), 'covhook.pth')
+#
+#
+# @task
+# def hook_coverage(ctx):
+#     with open(covpth(), 'w') as f:
+#         f.write('import coverage; coverage.process_startup()\n')
+#
+#
+# @task
+# def unhook_coverage(ctx):
+#     try:
+#         os.remove(covpth())
+#     except OSError as e:
+#         if e.errno != errno.ENOENT:
+#             raise
+
+
 @task
-def test(ctx):
-    ctx.run('nosetests test')
+def test(ctx, coverage=False):
+    cmd = 'nosetests test'
+    if coverage:
+        cmd += ' --with-coverage --cover-erase --cover-package=autolycus'
+    ctx.run(cmd)
+
+
+@task
+def report(ctx):
+    ctx.run('coverage html')
+    webbrowser.open_new_tab(fileurl(os.path.join(ROOT, 'coverage_html_report', 'index.html')))
 
 
 @task

@@ -111,11 +111,11 @@ def save_cache(filename,cache):
   f.close()
 ### End Cache files
 
-def _noop(x):
+def _noop(x): # pragma: no cover (WIP)
     return x
 
 
-class CacheFile(object):
+class CacheFile(object): # pragma: no cover (WIP)
     def __init__(self, filename, key_transform=None):
         self.filename = filename
         if key_transform is None:
