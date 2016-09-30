@@ -13,7 +13,7 @@ setup(
     author_email='prometheus235@gmail.com',
 
     description='Exports/synchronizes a Mercurial repo to Git',
-    long_description=read('README.rst'),
+    long_description=read('README.md'),
     license='GPLv2',
 
     packages=['autolycus'],
