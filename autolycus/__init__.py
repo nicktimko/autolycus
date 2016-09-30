@@ -6,4 +6,4 @@ from .hg_reset import main as reset
 # from . import hg_reset as r
 from . import legacy
 
-__version__ = '0.0.7'
+__version__ = '0.0.8dev'
