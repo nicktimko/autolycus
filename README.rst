@@ -1,6 +1,12 @@
 Autolycus - Mercurial to Git converter
 ===============================================
 
+.. image:: https://img.shields.io/travis/nicktimko/autolycus.svg?maxAge=2592000?style=flat-square   :target: https://travis-ci.org/nicktimko/autolycus
+
+.. image:: https://img.shields.io/codecov/c/github/nicktimko/autolycus.svg?maxAge=2592000?style=flat-square   :target: https://codecov.io/gh/nicktimko/autolycus
+
+.. image:: https://img.shields.io/pypi/v/autolycus.svg?maxAge=2592000?style=flat-square   :target:  https://pypi.python.org/pypi/autolycus
+
 Usage
 -----
 
