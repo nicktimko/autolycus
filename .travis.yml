@@ -21,3 +21,6 @@ before_script:
 
 script:
   - invoke test
+
+after_success:
+  - codecov

@@ -1,3 +1,4 @@
+codecov
 coverage
 invoke
 mercurial

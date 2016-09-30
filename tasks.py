@@ -70,7 +70,7 @@ def install(ctx):
 def test(ctx, coverage=False):
     cmd = 'nosetests test'
     if coverage:
-        cmd += ' --with-coverage --cover-erase --cover-package=autolycus'
+        cmd += ' --with-coverage --cover-erase --cover-xml --cover-package=autolycus'
     ctx.run(cmd)
 
 

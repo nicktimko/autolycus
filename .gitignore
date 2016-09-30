@@ -2,6 +2,7 @@
 .dotest
 .coverage
 coverage_*report/
+coverage.xml
 
 build/
 dist/
