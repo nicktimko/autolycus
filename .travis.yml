@@ -20,7 +20,7 @@ before_script:
   - rm -rf autolycus/ setup.py # eliminate any way to import the source
 
 script:
-  - invoke test
+  - invoke test --coverage
 
 after_success:
   - codecov

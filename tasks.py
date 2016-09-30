@@ -30,6 +30,7 @@ def clean(ctx):
                 raise
             print('already gone.')
 
+    ctx.run('coverage erase')
 
 @task
 def build(ctx):
@@ -70,8 +71,12 @@ def install(ctx):
 def test(ctx, coverage=False):
     cmd = 'nosetests test'
     if coverage:
-        cmd += ' --with-coverage --cover-erase --cover-xml --cover-package=autolycus'
+        cmd += ' --with-coverage --cover-erase --cover-package=autolycus'
+
     ctx.run(cmd)
+
+    if coverage:
+        ctx.run('coverage xml')
 
 
 @task
